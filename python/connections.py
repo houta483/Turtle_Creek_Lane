@@ -80,3 +80,4 @@ def createDatabaseAndPopulateWithFollowersDateAndTime(json_file):
 if __name__ =="__main__":
   if (os.path.exists('/Users/Tanner/code/products/turtlecreeklane/database/InstagramFollowerData.xlsx') == False):
     createDatabaseAndPopulateWithFollowersDateAndTime()
+
