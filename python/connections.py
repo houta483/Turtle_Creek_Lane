@@ -34,7 +34,7 @@ from dateutil.parser import parse
 # rawDismissedSuggestedUSers = data['dismissed_suggested_users']
 # prettyFollowers = json.dumps(rawDismissedSuggestedUSers, indent=4)
 
-def createDatabaseAndPopulateWithFollowersDateAndTime(json_file):
+def createDatabaseAndPopulateWithFollowersDateAndTime(json_file, path):
   with open(json_file) as f:
     data = json.load(f)
 
@@ -71,8 +71,7 @@ def createDatabaseAndPopulateWithFollowersDateAndTime(json_file):
     })
     df = df.append(df1, ignore_index=True)
 
-    datatoexcel = pd.ExcelWriter(
-        "/Users/Tanner/code/products/turtlecreeklane/database/InstagramFollowerData.xlsx", engine="xlsxwriter")
+    datatoexcel = pd.ExcelWriter(path + "/InstagramFollowerData.xlsx", engine="xlsxwriter")
     df.to_excel(datatoexcel, sheet_name="sheet1")
     datatoexcel.save()
 

@@ -11,13 +11,16 @@ CORS(app)
 
 @app.route("/submit/", methods=["POST"])
 def submit():
+  ## this method runs when submits.
   if request.method == "POST":
     if 'file' in request.files:
       json_file = request.files['file']
-      saved_name = os.path.join(
-          "/Users/Tanner/code/products/turtlecreeklane/", json_file.filename)
+      ## we can just provicde a path with the body request.
+      path = request.args.get('path', 'none')
+      print(path)
+      saved_name = os.path.join(path, json_file.filename)
       json_file.save(saved_name)
-      createDatabaseAndPopulateWithFollowersDateAndTime(saved_name)
+      createDatabaseAndPopulateWithFollowersDateAndTime(saved_name, path)
     else:
       print("file not present")
   print("sucess")

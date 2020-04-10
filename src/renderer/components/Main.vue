@@ -2,6 +2,7 @@
   <div class='parent' v-if="this.$store.state.followers === true">
     <p class='selectData'> Please select the file containing your followers' data </p>
     <input style="padding-left: 20px" class='file' id="file" ref="file" type="file" v-on:change="handleFile('followers')"/>
+    <input type="file" ref="directory" webkitdirectory v-on:change="handleDirectory()"/>
     <button style="padding-left: -20px" class='runPythonButton' @click="clearFile('followers')"> Clear File </button>
 
     <br>
@@ -66,9 +67,13 @@ export default {
       picsProcessed: false,
       nameOfFile: '',
       numberOfPictures: 0,
+      directory: '$HOME'
     }
   },
   methods: {
+    handleDirectory() {
+      this.directory = this.$refs.directory.files[0].path
+    },
     clearFile (file) {
       document.getElementById("file").value = ''
 
@@ -95,7 +100,7 @@ export default {
       form_data.append('file', this.file)
             
       await axios.post(
-        'http://localhost:5000/submit/',
+        `http://localhost:5000/submit/?path=${this.directory}`,
         form_data,
         {
           headers: {
