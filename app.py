@@ -30,18 +30,21 @@ def submit():
 def stickers():
   if (request.method == "POST" and request.files.getlist('file')):
     uploads = request.files.getlist('file')
-    print(request.files)
+
+    # this is the path that we are passing along (aka where we want to save the output)
+    path = request.args.get('path', 'none')
+    print(path)
 
     for pic in uploads:
       filename = pic.filename.split(".")[0] + '.jpg'
-      saved_name = os.path.join("/Users/Tanner/code/products/turtlecreeklane/uncroppedImages/", filename)
+      saved_name = os.path.join("./uncroppedImages/", filename)
       pic.save(saved_name)
 
       image = Image.open(saved_name)
       rgb_im = image.convert('RGB')
       rgb_im.save(saved_name)
 
-    prepareToRun()
+    prepareToRun(path)
   else:
     print('file not present')
     

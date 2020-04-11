@@ -24,6 +24,7 @@
   <div class='parent' v-else-if="this.$store.state.stickerResponses === true">
     <p class='selectData'> Please select the screenshots containing your sticker response data </p>
     <input class='file' id="file" ref="file" type="file" v-on:change="handleFile('stickers')" multiple />
+    <input type="file" ref="directory" webkitdirectory v-on:change="handleDirectory()"/>
     <button class='runPythonButton' @click="clearFile('stickers')"> Clear File </button>
     <br>
     <button 
@@ -128,7 +129,7 @@ export default {
       this.numberOfPictures = this.file.length
 
       await axios.post(
-        'http://localhost:5000/stickers/',
+        `http://localhost:5000/stickers/?path=${this.directory}`,
         form_data,
         {
           headers: {

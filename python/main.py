@@ -9,21 +9,19 @@ os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = r'./python/APIKey.json'
 
 client = vision.ImageAnnotatorClient()
 
-def createDatabase():
+def createDatabase(path):
   df = pd.DataFrame({"IG Handle": ["@"], 'Date Started Following': ['-'], 'First Name': ['-'],
                      'Last Name': ['-'], 'Home State': ['-'], 'Home City': ['-'], 'Aprx Household Income': ['-'],
                      'Date of Last Story View': ['-'], 'Date of Last Story Engagement': ['-'], '# of Story Engagements': ['-'],
                      '# of Story Swipe Ups': ['-'], 'Date of Last Post Engagement': ['-'], '# of Post Engagements': ['-'],
                      '# Post Likes': ['-'], '# of Post Comments': ['-'], 'Response to Story Question Stickers': ['See Following columns']
                      })
-  datatoexcel = pd.ExcelWriter(
-      "/Users/Tanner/code/products/turtlecreeklane/database/InstagramStickerResponseData.xlsx", engine="xlsxwriter")
+  datatoexcel = pd.ExcelWriter(path + "/InstagramStickerResponseData.xlsx", engine="xlsxwriter")
   df.to_excel(datatoexcel, sheet_name="sheet1")
   datatoexcel.save()
 
-def populateDatabase(name, stickerQuestion, response):
-  df = pd.read_excel(
-      '/Users/Tanner/code/products/turtlecreeklane/database/InstagramStickerResponseData.xlsx', index_col=[0])
+def populateDatabase(name, stickerQuestion, response, path):
+  df = pd.read_excel(path + '/InstagramStickerResponseData.xlsx', index_col=[0])
 
   foundIGHandle = df[df['IG Handle'].str.contains(name)]
   IGHandlecount = foundIGHandle.count()[-1]
@@ -36,8 +34,7 @@ def populateDatabase(name, stickerQuestion, response):
   df2[stickerQuestion] = response
   df = df.append(df2, ignore_index=True)
 
-  datatoexcel = pd.ExcelWriter(
-      "/Users/Tanner/code/products/turtlecreeklane/database/InstagramStickerResponseData.xlsx", engine="xlsxwriter")
+  datatoexcel = pd.ExcelWriter(path + "/InstagramStickerResponseData.xlsx", engine="xlsxwriter")
   df.to_excel(datatoexcel, sheet_name="sheet1")
   datatoexcel.save()
 
@@ -56,28 +53,29 @@ def createSubImages(picture):
   rightLower = rightSide.crop((0, (rightSide.height / 2), rightSide.width, (3 * rightSide.height / 4)))
   rightBottom = rightSide.crop((0, (rightSide.height - (.97 * (rightSide.height / 4))), rightSide.width, (rightSide.height)))
 
-  leftTop.save(f"/Users/Tanner/code/products/turtlecreeklane/croppedImages/{uuid.uuid1()}.jpg")
-  leftUpper.save(f"/Users/Tanner/code/products/turtlecreeklane/croppedImages/{uuid.uuid1()}.jpg")
-  leftLower.save(f"/Users/Tanner/code/products/turtlecreeklane/croppedImages/{uuid.uuid1()}.jpg")
-  leftBottom.save(f"/Users/Tanner/code/products/turtlecreeklane/croppedImages/{uuid.uuid1()}.jpg")
+  leftTop.save(f"./croppedImages/{uuid.uuid1()}.jpg")
+  leftUpper.save(f"./croppedImages/{uuid.uuid1()}.jpg")
+  leftLower.save(f"./croppedImages/{uuid.uuid1()}.jpg")
+  leftBottom.save(f"./croppedImages/{uuid.uuid1()}.jpg")
 
-  rightTop.save(f"/Users/Tanner/code/products/turtlecreeklane/croppedImages/{uuid.uuid1()}.jpg")
-  rightUpper.save(f"/Users/Tanner/code/products/turtlecreeklane/croppedImages/{uuid.uuid1()}.jpg")
-  rightLower.save(f"/Users/Tanner/code/products/turtlecreeklane/croppedImages/{uuid.uuid1()}.jpg")
-  rightBottom.save(f"/Users/Tanner/code/products/turtlecreeklane/croppedImages/{uuid.uuid1()}.jpg")
+  rightTop.save(f"./croppedImages/{uuid.uuid1()}.jpg")
+  rightUpper.save(f"./croppedImages/{uuid.uuid1()}.jpg")
+  rightLower.save(f"./croppedImages/{uuid.uuid1()}.jpg")
+  rightBottom.save(f"./croppedImages/{uuid.uuid1()}.jpg")
 
-def populate():
+def populate(path):
   count = 0
-  for filepath in glob.iglob('/Users/Tanner/code/products/turtlecreeklane/croppedImages/*'):
+  for filepath in glob.iglob('./croppedImages/*'):
     count = count + 1
 
     lengthOfDir = 0
-    for name in os.listdir('/Users/Tanner/code/products/turtlecreeklane/croppedImages'):
+    for name in os.listdir('./croppedImages'):
       lengthOfDir = lengthOfDir + 1
 
     print(str(round((count/lengthOfDir*100), 2)) + "%" + " Completed" )
 
     file_name = os.path.abspath(f"{filepath}")
+
     with io.open(file_name, 'rb') as image_file:
       content = image_file.read()
       image = types.Image(content=content)
@@ -88,16 +86,17 @@ def populate():
       newText = str("".join(textBody))
       newTextWithoutReply = newText.split('Reply')[0]
 
-      if (os.path.exists('/Users/Tanner/code/products/turtlecreeklane/database/InstagramStickerResponseData.xlsx') == False):
-        createDatabase()
+      if (os.path.exists(path + '/InstagramStickerResponseData.xlsx') == False):
+        createDatabase(path)
+
         print('the database exists')
-      populateDatabase(username, 'Add Question', newTextWithoutReply)
+      populateDatabase(username, 'Add Question', newTextWithoutReply, path)
 
 def clearCache(folder):
   if (folder == "cropped"):
-    path = '/Users/Tanner/code/products/turtlecreeklane/croppedImages'
+    path = './croppedImages'
   elif (folder == "uncropped"):
-    path = '/Users/Tanner/code/products/turtlecreeklane/uncroppedImages'
+    path = './uncroppedImages'
     
   for filename in os.listdir(path):
     file_path = os.path.join(path, filename)
@@ -109,12 +108,13 @@ def clearCache(folder):
     except Exception as e:
       print('Failed to delete %s. Reason: %s' % (file_path, e))
 
-def prepareToRun():
-  for filename in os.listdir('/Users/Tanner/code/products/turtlecreeklane/uncroppedImages'):
-    image_file = os.path.join('/Users/Tanner/code/products/turtlecreeklane/uncroppedImages/', filename)
+def prepareToRun(path):
+  print(path)
+  for filename in os.listdir('./uncroppedImages'):
+    image_file = os.path.join('./uncroppedImages/', filename)
     createSubImages(f"{image_file}")
   
-  populate()
+  populate(path)
   clearCache('cropped')
   clearCache('uncropped')
 
