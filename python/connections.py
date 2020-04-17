@@ -46,14 +46,7 @@ def createDatabaseAndPopulateWithFollowersDateAndTime(json_file, path):
                      '# of Story Swipe Ups': ['-'], 'Date of Last Post Engagement': ['-'], '# of Post Engagements': ['-'],
                      '# Post Likes': ['-'], '# of Post Comments': ['-'], 'Response to Story Question Stickers': ['->']})
 
-  count = 0
   for index in enumerate(rawFollowers.items()):
-
-    count = count + 1
-    print(count)
-
-    if (count == 100):
-      break
 
     dateTime = str(index[1][1])
     date = dateTime.split("T")[0]
