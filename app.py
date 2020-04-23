@@ -51,3 +51,5 @@ def stickers():
   print('success')
   return jsonify(status='200')
 
+if __name__ == "__main__":
+  app.run()

@@ -1,5 +1,5 @@
 import { app, BrowserWindow } from 'electron'
-
+import path from 'path'
 /**
  * Set `__static` path to static files in production
  * https://simulatedgreg.gitbooks.io/electron-vue/content/en/using-static-assets.html
@@ -63,3 +63,42 @@ app.on('ready', () => {
   if (process.env.NODE_ENV === 'production') autoUpdater.checkForUpdates()
 })
  */
+
+// add these to the end or middle of main.js
+
+let pyProc = null
+let pyPort = null
+
+const selectPort = () => {
+  pyPort = 4242
+  return pyPort
+}
+
+const createPyProc = () => {
+  // let port = '' + selectPort()
+  let script = path.join(__dirname, '../../app.py')
+  pyProc = require('child_process').spawn('/Library/Frameworks/Python.framework/Versions/3.8/bin/python3', [script,])
+  pyProc.stdout.on('data', (data) => {
+    console.log(`stdout: ${data}`);
+  });
+
+  pyProc.stderr.on('data', (data) => {
+    console.error(`stderr: ${data}`);
+  });
+  
+  
+  if (pyProc != null) {
+    console.log('child process success- flask server created')
+  } else {
+    console.log('ERROR: failed to start flask server')
+  }
+}
+
+const exitPyProc = () => {
+  pyProc.kill()
+  pyProc = null
+  pyPort = null
+}
+
+app.on('ready', createPyProc)
+app.on('will-quit', exitPyProc)
