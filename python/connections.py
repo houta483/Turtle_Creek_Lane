@@ -46,8 +46,14 @@ def createDatabaseAndPopulateWithFollowersDateAndTime(json_file, path):
                      '# of Story Swipe Ups': ['-'], 'Date of Last Post Engagement': ['-'], '# of Post Engagements': ['-'],
                      '# Post Likes': ['-'], '# of Post Comments': ['-'], 'Response to Story Question Stickers': ['->']})
 
-  for index in enumerate(rawFollowers.items()):
+  count = 0;
+  subcount = 0
 
+  for index in enumerate(rawFollowers.items()):
+    count = count + 1
+    subcount = subcount + 1
+    print(subcount, count)
+    
     dateTime = str(index[1][1])
     date = dateTime.split("T")[0]
     date = date.split('-')
@@ -64,9 +70,18 @@ def createDatabaseAndPopulateWithFollowersDateAndTime(json_file, path):
     })
     df = df.append(df1, ignore_index=True)
 
-    datatoexcel = pd.ExcelWriter(path + "/InstagramFollowerData.xlsx", engine="xlsxwriter")
-    df.to_excel(datatoexcel, sheet_name="sheet1")
-    datatoexcel.save()
+    if (subcount == 2000):
+      datatoexcel = pd.ExcelWriter(path + "/InstagramFollowerData.xlsx", engine="xlsxwriter")
+      df.to_excel(datatoexcel, sheet_name="sheet1")
+      datatoexcel.save()
+      subcount = 1
+    
+    # if (count == 10000):
+    #   break
+
+  datatoexcel = pd.ExcelWriter(path + "/InstagramFollowerData.xlsx", engine="xlsxwriter")
+  df.to_excel(datatoexcel, sheet_name="sheet1")
+  datatoexcel.save()
 
 
 if __name__ =="__main__":

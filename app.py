@@ -6,6 +6,8 @@ from python.connections import createDatabaseAndPopulateWithFollowersDateAndTime
 from python.main import prepareToRun
 from PIL import Image
 
+# Flask is  Running on http://127.0.0.1:5000/ 
+
 app = Flask(__name__)
 CORS(app)
 
@@ -31,15 +33,17 @@ def stickers():
   if (request.method == "POST" and request.files.getlist('file')):
     uploads = request.files.getlist('file')
 
-    # this is the path that we are passing along (aka where we want to save the output)
+    # where we want to save the output
     path = request.args.get('path', 'none')
     print(path)
 
     for pic in uploads:
+      # Save the pictures to the uncropped images cache
       filename = pic.filename.split(".")[0] + '.jpg'
       saved_name = os.path.join("./uncroppedImages/", filename)
       pic.save(saved_name)
 
+      # save to correct format 
       image = Image.open(saved_name)
       rgb_im = image.convert('RGB')
       rgb_im.save(saved_name)

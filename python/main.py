@@ -23,10 +23,11 @@ def createDatabase(path):
 def populateDatabase(name, stickerQuestion, response, path):
   df = pd.read_excel(path + '/InstagramStickerResponseData.xlsx', index_col=[0])
 
-  foundIGHandle = df[df['IG Handle'].str.contains(name)]
-  IGHandlecount = foundIGHandle.count()[-1]
+  # This is the beginings of adding the responses from the same person to the same name
+  # foundIGHandle = df[df['IG Handle'].str.contains(name)]
+  # IGHandlecount = foundIGHandle.count()[-1]
 
-  df2 = pd.DataFrame({"IG Handle": [f"@{name}"], 'Date Started Following': ['-'], 'First Name': ['-'],
+  df2 = pd.DataFrame({"IG Handle": [f"{name}"], 'Date Started Following': ['-'], 'First Name': ['-'],
                       'Last Name': ['-'], 'Home State': ['-'], 'Home City': ['-'], 'Aprx Household Income': ['-'],
                       'Date of Last Story View': ['-'], 'Date of Last Story Engagement': ['-'], '# of Story Engagements': ['-'],
                       '# of Story Swipe Ups': ['-'], 'Date of Last Post Engagement': ['-'], '# of Post Engagements': ['-'],
@@ -64,6 +65,7 @@ def createSubImages(picture):
   rightBottom.save(f"./croppedImages/{uuid.uuid1()}.jpg")
 
 def populate(path):
+  # The second loop is just to see how many of the files have been completed. It does not have functional value
   count = 0
   for filepath in glob.iglob('./croppedImages/*'):
     count = count + 1
@@ -76,6 +78,7 @@ def populate(path):
 
     file_name = os.path.abspath(f"{filepath}")
 
+      # read each cropped image suing google vision api
     with io.open(file_name, 'rb') as image_file:
       content = image_file.read()
       image = types.Image(content=content)
@@ -90,6 +93,7 @@ def populate(path):
         createDatabase(path)
 
         print('the database exists')
+      # Later, I hope to change 'Add Question' to whatever the real quesiton is. This way I can have responses from everyone for every Q in one document
       populateDatabase(username, 'Add Question', newTextWithoutReply, path)
 
 def clearCache(folder):
@@ -110,6 +114,7 @@ def clearCache(folder):
 
 def prepareToRun(path):
   print(path)
+  # Submit each image in the uncropped images folder to the createSubImages function
   for filename in os.listdir('./uncroppedImages'):
     image_file = os.path.join('./uncroppedImages/', filename)
     createSubImages(f"{image_file}")
