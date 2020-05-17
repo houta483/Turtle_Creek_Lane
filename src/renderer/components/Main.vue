@@ -1,13 +1,19 @@
 <template>
   <div class='parent' v-if="this.$store.state.followers === true">
-    <FollowerData
+    <FollowerData 
       :selectData=selectData
-      :handleFile=handleFile(followers)
-      :handleDirectory=handleDirectory()
-      :runPythonButton=runPythonButton
-      :clearFile=clearFile(followers)
-      :myMethod=myMethod
-    />
+      :file=file
+      :handleFile='handleFile(followers)'
+      :handleDirectory='handleDirectory()'
+      :runPythonButton='runPythonButton'
+      :clearFile='clearFile(followers)'
+      :myMethod='myMethod'
+      :parent='parent'
+      :loader='loader'
+      :nameOfFile='this.nameOfFile'
+    >
+
+    </FollowerData>
   </div>
 
   <div class='parent' v-else-if="this.$store.state.stickerResponses === true">
@@ -47,8 +53,8 @@ Vue.use(VueAxios, axios)
 
 export default {
   name: "Main",
-  props: {
-    msg: String,
+  components: {
+    FollowerData
   },
   data () {
     return {

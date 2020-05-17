@@ -1,7 +1,7 @@
 <template>
   <div>
     <p class='{{selectData}}'> Please select the file containing your followers' data </p>
-    <input style="padding-left: 20px" class='file' id="file" ref="file" type="file" v-on:change="{{handleFile}}"/>
+    <input style="padding-left: 20px" class='{{file}}' id="file" ref="file" type="file" v-on:change="{{handleFile}}"/>
     <input type="file" ref="directory" webkitdirectory v-on:change="{{handleDirectory}}"/>
     <button style="padding-left: -20px" class='{{runPythonButton}}' @click="{{clearFile}}"> Clear File </button>
 
@@ -12,7 +12,7 @@
     >
       Analyze Follower Data 
     </button>
-    <br v-if="this.rendering == true">
+    <br v-if="{{rendering}}">
     <br v-if="this.rendering == true">
     <div class='parent' style="{width: 100%;}">
       <div class="loader" v-if="this.rendering == true"></div>
@@ -23,9 +23,7 @@
 
 <script>
 export default {
-  props: [
-    selectData, handleFile, handleDirectory, runPythonButton, clearFile, myMethod
-  ]
+  props: ['selectData', 'handleFile', 'handleDirectory', 'runPythonButton', 'clearFile', 'myMethod']
 }
 </script>
 
