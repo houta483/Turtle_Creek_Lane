@@ -6,7 +6,14 @@ from python.connections import createDatabaseAndPopulateWithFollowersDateAndTime
 from python.main import prepareToRun
 from PIL import Image
 
-# Flask is  Running on http://127.0.0.1:5000/ 
+# RUN FLASK
+# $ export FLASK_APP=app.py
+# $ flask run
+# Flask is  Running on http://127.0.0.1:5000/
+
+# KILL FLASK
+# lsof -i :<PORT>
+# kill -9 <PID>
 
 app = Flask(__name__)
 CORS(app)

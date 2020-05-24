@@ -10,6 +10,7 @@ os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = r'./python/APIKey.json'
 client = vision.ImageAnnotatorClient()
 
 def createDatabase(path):
+  # print('Create Database')
   df = pd.DataFrame({"IG Handle": ["@"], 'Date Started Following': ['-'], 'First Name': ['-'],
                      'Last Name': ['-'], 'Home State': ['-'], 'Home City': ['-'], 'Aprx Household Income': ['-'],
                      'Date of Last Story View': ['-'], 'Date of Last Story Engagement': ['-'], '# of Story Engagements': ['-'],
@@ -21,6 +22,7 @@ def createDatabase(path):
   datatoexcel.save()
 
 def populateDatabase(name, stickerQuestion, response, path):
+  # print('Populate Database')
   df = pd.read_excel(path + '/InstagramStickerResponseData.xlsx', index_col=[0])
 
   # This is the beginings of adding the responses from the same person to the same name
@@ -34,12 +36,13 @@ def populateDatabase(name, stickerQuestion, response, path):
                       '# Post Likes': ['-'], '# of Post Comments': ['-'], 'Response to Story Question Stickers': ['->']})
   df2[stickerQuestion] = response
   df = df.append(df2, ignore_index=True)
-
   datatoexcel = pd.ExcelWriter(path + "/InstagramStickerResponseData.xlsx", engine="xlsxwriter")
   df.to_excel(datatoexcel, sheet_name="sheet1")
   datatoexcel.save()
 
+
 def createSubImages(picture):
+  # print('Create Subimage')
   im = Image.open(picture)
 
   leftSide = im.crop((0, 180, im.width / 2, (im.height - (.1 * im.height))))
@@ -66,6 +69,7 @@ def createSubImages(picture):
 
 def populate(path):
   # The second loop is just to see how many of the files have been completed. It does not have functional value
+  # print('Populate')
   count = 0
   for filepath in glob.iglob('./croppedImages/*'):
     count = count + 1
@@ -84,19 +88,24 @@ def populate(path):
       image = types.Image(content=content)
       response = client.document_text_detection(image=image)
       text = response.text_annotations
-      username = text[0].description.split('\n')[0]
-      textBody = text[0].description.split('\n')[1:]
-      newText = str("".join(textBody))
-      newTextWithoutReply = newText.split('Reply')[0]
+      if (text):
+        username = text[0].description.split('\n')[0]
+        textBody = text[0].description.split('\n')[1:]
+        newText = str("".join(textBody))
+        newTextWithoutReply = newText.split('Reply')[0]
 
-      if (os.path.exists(path + '/InstagramStickerResponseData.xlsx') == False):
-        createDatabase(path)
+        if (os.path.exists(path + '/InstagramStickerResponseData.xlsx') == False):
+          createDatabase(path)
 
-        print('the database exists')
-      # Later, I hope to change 'Add Question' to whatever the real quesiton is. This way I can have responses from everyone for every Q in one document
-      populateDatabase(username, 'Add Question', newTextWithoutReply, path)
+          print('The Database Exists')
+        # Later, I hope to change 'Add Question' to whatever the real quesiton is. This way I can have responses from everyone for every Q in one document
+        populateDatabase(username, 'Add Question', newTextWithoutReply, path)
+
+      else:
+        print('image not readable')
 
 def clearCache(folder):
+  # print('Clear Cache')
   if (folder == "cropped"):
     path = './croppedImages'
   elif (folder == "uncropped"):
@@ -113,6 +122,7 @@ def clearCache(folder):
       print('Failed to delete %s. Reason: %s' % (file_path, e))
 
 def prepareToRun(path):
+  print('Prepare to Run')
   print(path)
   # Submit each image in the uncropped images folder to the createSubImages function
   for filename in os.listdir('./uncroppedImages'):
