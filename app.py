@@ -1,5 +1,5 @@
 import os
-
+from python.sendTCLEmail import sendEmail
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 from python.connections import createDatabaseAndPopulateWithFollowersDateAndTime
@@ -56,6 +56,9 @@ def stickers():
       rgb_im.save(saved_name)
 
     prepareToRun(path)
+     # Add Specific Email Address
+    # sendEmail('houta483@uchicago.edu', '../../data/Output Data/InstagramStickerResponseData.xlsx')
+
   else:
     print('file not present')
     
