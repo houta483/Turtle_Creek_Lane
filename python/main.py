@@ -1,6 +1,7 @@
 import os, uuid, io, os, os.path, json, glob, shutil
 from PIL import Image
 import pandas as pd
+import python.mysql as mysql
 
 from google.cloud import vision
 from google.cloud.vision import types
@@ -22,7 +23,10 @@ def createDatabase(path):
   datatoexcel.save()
 
 def populateDatabase(name, stickerQuestion, response, path):
-  # print('Populate Database')
+  # Use this if you want to save in SQL
+  # mysql.insertValue(name, response)
+
+  # Use this if you want to save in Excel
   df = pd.read_excel(path + '/InstagramStickerResponseData.xlsx', index_col=[0])
 
   # This is the beginings of adding the responses from the same person to the same name
@@ -39,7 +43,6 @@ def populateDatabase(name, stickerQuestion, response, path):
   datatoexcel = pd.ExcelWriter(path + "/InstagramStickerResponseData.xlsx", engine="xlsxwriter")
   df.to_excel(datatoexcel, sheet_name="sheet1")
   datatoexcel.save()
-
 
 def createSubImages(picture):
   # print('Create Subimage')
